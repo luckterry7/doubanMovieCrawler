@@ -58,7 +58,7 @@ public class CrawlerStarter {
 	 */
 	private static void initializeQueue(){
 		// 例如，需要抓取豆瓣TOP 250的电影信息，根据链接规则生成URLs放入带抓取队列
-		for(int i = 0; i < 50; i += 25){
+		for(int i = 0; i < 250; i += 25){
 			UrlQueue.addElement("http://movie.douban.com/top250?start=" + i);
 		}
 	}
