@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import cn.terry.doubanMovieCrawler.movieCrawler.model.SpiderParams;
+import cn.terry.doubanMovieCrawler.movieCrawler.model.CrawlerParams;
 import cn.terry.doubanMovieCrawler.movieCrawler.queue.UrlQueue;
-import cn.terry.doubanMovieCrawler.movieCrawler.worker.SpiderWorker;
+import cn.terry.doubanMovieCrawler.movieCrawler.worker.CrawlerWorker;
 
 
 
@@ -24,8 +24,8 @@ public class CrawlerStarter {
 		initializeQueue();
 		
 		// 创建worker线程并启动
-		for(int i = 1; i <= SpiderParams.WORKER_NUM; i++){
-			new Thread(new SpiderWorker(i)).start();
+		for(int i = 1; i <= CrawlerParams.WORKER_NUM; i++){
+			new Thread(new CrawlerWorker(i)).start();
 		}
 	}
 	
@@ -40,8 +40,8 @@ public class CrawlerStarter {
 			properties.load(in);
 			
 			// 从配置文件中读取参数
-			SpiderParams.WORKER_NUM = Integer.parseInt(properties.getProperty("crawler.threadNum"));
-			SpiderParams.DEYLAY_TIME = Integer.parseInt(properties.getProperty("crawler.fetchDelay"));
+			CrawlerParams.WORKER_NUM = Integer.parseInt(properties.getProperty("crawler.threadNum"));
+			CrawlerParams.DEYLAY_TIME = Integer.parseInt(properties.getProperty("crawler.fetchDelay"));
 
 			in.close();
 		} 

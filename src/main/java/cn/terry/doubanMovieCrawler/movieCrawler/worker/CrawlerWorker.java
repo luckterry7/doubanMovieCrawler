@@ -5,21 +5,21 @@ import java.util.logging.Logger;
 import cn.terry.doubanMovieCrawler.movieCrawler.fetcher.PageFetcher;
 import cn.terry.doubanMovieCrawler.movieCrawler.hadler.ContentHandler;
 import cn.terry.doubanMovieCrawler.movieCrawler.model.FetchedPage;
-import cn.terry.doubanMovieCrawler.movieCrawler.model.SpiderParams;
+import cn.terry.doubanMovieCrawler.movieCrawler.model.CrawlerParams;
 import cn.terry.doubanMovieCrawler.movieCrawler.parser.ContentParser;
 import cn.terry.doubanMovieCrawler.movieCrawler.queue.UrlQueue;
 import cn.terry.doubanMovieCrawler.movieCrawler.storage.DataStorage;
 
 
-public class SpiderWorker implements Runnable{
-		private static final Logger Log = Logger.getLogger(SpiderWorker.class.getName());
+public class CrawlerWorker implements Runnable{
+		private static final Logger Log = Logger.getLogger(CrawlerWorker.class.getName());
 		private PageFetcher fetcher;
 		private ContentHandler handler;
 		private ContentParser parser;
 		private DataStorage store;
 		private int threadIndex;
 		
-		public SpiderWorker(int threadIndex){
+		public CrawlerWorker(int threadIndex){
 			this.threadIndex = threadIndex;
 			this.fetcher = new PageFetcher();
 			this.handler = new ContentHandler();
@@ -59,7 +59,7 @@ public class SpiderWorker implements Runnable{
 				
 				// delay
 				try {
-					Thread.sleep(SpiderParams.DEYLAY_TIME);
+					Thread.sleep(CrawlerParams.DEYLAY_TIME);
 				} 
 				catch (InterruptedException e) {
 					e.printStackTrace();
