@@ -2,6 +2,7 @@ package cn.terry.doubanMovieCrawler.movieCrawler.fetcher;
 
 import java.util.logging.Logger;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,6 +13,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
+import cn.terry.doubanMovieCrawler.movieCrawler.model.CrawlerParams;
 import cn.terry.doubanMovieCrawler.movieCrawler.model.FetchedPage;
 import cn.terry.doubanMovieCrawler.movieCrawler.queue.UrlQueue;
 
@@ -45,13 +47,14 @@ public class PageFetcher {
 	 */
 	public FetchedPage getContentFromUrl(String url){
 		String content = null;
+		String type = null;
 		int statusCode = 500;
 		
 		// 创建Get请求，并设置Header
 		HttpGet getHttp = new HttpGet(url);	
 		getHttp.setHeader("User-Agent","Mozilla/5.0 (Windows NT 6.1; rv:16.0) Gecko/20100101 Firefox/16.0");
 		HttpResponse response;
-		
+		Log.info("request url:" + url);
 		try{
 			// 获得信息载体
 			response = client.execute(getHttp);
@@ -62,6 +65,13 @@ public class PageFetcher {
 				// 转化为文本信息, 设置爬取网页的字符集，防止乱码
 				content = EntityUtils.toString(entity, "UTF-8");
 			}
+			
+			//获得报文头，得到报文类型
+			Header[] headers = response.getHeaders("Content-Type");
+			String ContentType = headers[0].getValue();
+			int start = ContentType.lastIndexOf("/") + 1;
+			int end = ContentType.lastIndexOf(";");
+			type = ContentType.substring(start,end);
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -71,6 +81,12 @@ public class PageFetcher {
 			UrlQueue.addFirstElement(url);
 		}
 
-		return new FetchedPage(url, content, statusCode);
+		FetchedPage fetchedPage = null; 
+		if(type.equalsIgnoreCase("html")){
+			fetchedPage= new FetchedPage(url, content, statusCode,CrawlerParams.FETCHEDPAGETYPE_HTML);
+		}else if(type.equalsIgnoreCase("json")){
+			fetchedPage = new FetchedPage(url, content, statusCode,CrawlerParams.FETCHEDPAGETYPE_JSON);
+		}
+		return fetchedPage;
 	}
 }

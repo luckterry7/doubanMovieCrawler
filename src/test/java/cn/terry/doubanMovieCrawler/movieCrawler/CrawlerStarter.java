@@ -57,9 +57,9 @@ public class CrawlerStarter {
 	 * 准备初始的爬取链接
 	 */
 	private static void initializeQueue(){
-		// 例如，需要抓取豆瓣TOP 250的电影信息，根据链接规则生成URLs放入带抓取队列
-		for(int i = 0; i < 250; i += 25){
-			UrlQueue.addElement("http://movie.douban.com/top250?start=" + i);
+//		UrlQueue.addElement("http://movie.douban.com");
+		for(int i =0;i<5;i++){
+			UrlQueue.addElement("http://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=" + i);
 		}
 	}
 }
