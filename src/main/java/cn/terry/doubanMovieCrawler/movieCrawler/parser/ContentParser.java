@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 
 
 public class ContentParser {
+	
 	public Object parse(FetchedPage fetchedPage){
 		Object targetObject = null;
 		String name = null;
@@ -28,6 +29,7 @@ public class ContentParser {
 		String photo = null;
 		
 		Document doc = Jsoup.parse(fetchedPage.getContent());
+System.out.println("==========movie info start=========");
 		if(doc.getElementsByAttributeValue("property","v:itemreviewed") != null){
 			name = doc.getElementsByAttributeValue("property","v:itemreviewed").html();
 System.out.println("name:" + name);
@@ -49,6 +51,8 @@ System.out.println("summary:" + summary);
 			photo = doc.getElementsByAttributeValue("rel","v:image").attr("src");
 System.out.println("photo:" + photo);
 		}
+		
+System.out.println("==========movie info end=========");
 		// 将URL放入已爬取队列
 		VisitedUrlQueue.addElement(fetchedPage.getUrl());
 		
@@ -58,18 +62,6 @@ System.out.println("photo:" + photo);
 		return targetObject; 
 	}
 	
-	private boolean containsTargetData(String url, Document contentDoc){
-		// 通过URL判断
-		// TODO
-		
-		// 通过content判断，比如需要抓取class为grid_view中的内容
-		if(contentDoc.getElementsByClass("grid_view") != null){
-			System.out.println(contentDoc.getElementsByClass("grid_view").toString());
-			return true;
-		}
-		
-		return false;
-	}
 	
 	/**
 	 * 使用阿里的json工具类，解析json对象
