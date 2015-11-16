@@ -57,8 +57,7 @@ public class CrawlerStarter {
 	 * 准备初始的爬取链接
 	 */
 	private static void initializeQueue(){
-//		UrlQueue.addElement("http://movie.douban.com");
-		for(int i =0;i<5;i++){
+		for(int i =0;i<2;i++){
 			UrlQueue.addElement("http://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=" + i);
 		}
 	}
