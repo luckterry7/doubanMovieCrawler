@@ -2,6 +2,22 @@ package cn.terry.doubanMovieCrawler.movieCrawler.fetcher;
 
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -50,12 +66,42 @@ public class PageFetcher {
 		String type = null;
 		int statusCode = 500;
 		
+		X509TrustManager xtm = new X509TrustManager() {
+			public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+			public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+			public X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
+		};
+		//这个好像是HOST验证
+		X509HostnameVerifier hostnameVerifier = new X509HostnameVerifier() {
+			public boolean verify(String arg0, SSLSession arg1) {
+				return true;
+			}
+			public void verify(String arg0, SSLSocket arg1) throws IOException {}
+			public void verify(String arg0, String[] arg1, String[] arg2) throws SSLException {}
+			public void verify(String arg0, X509Certificate arg1) throws SSLException {}
+		};
+		
+	
+		
 		// 创建Get请求，并设置Header
 		HttpGet getHttp = new HttpGet(url);	
 		getHttp.setHeader("User-Agent","Mozilla/5.0 (Windows NT 6.1; rv:16.0) Gecko/20100101 Firefox/16.0");
 		HttpResponse response;
 		Log.info("request url:" + url);
 		try{
+			
+			//TLS1.0与SSL3.0基本上没有太大的差别，可粗略理解为TLS是SSL的继承者，但它们使用的是相同的SSLContext
+			SSLContext ctx = SSLContext.getInstance("TLS");
+			//使用TrustManager来初始化该上下文，TrustManager只是被SSL的Socket所使用
+			ctx.init(null, new TrustManager[] { xtm }, null);
+			//创建SSLSocketFactory
+			SSLSocketFactory socketFactory = new SSLSocketFactory(ctx);
+			socketFactory.setHostnameVerifier(hostnameVerifier);
+			//通过SchemeRegistry将SSLSocketFactory注册到我们的HttpClient上
+			client.getConnectionManager().getSchemeRegistry().register(new Scheme("https", socketFactory, 443));
+			
 			// 获得信息载体
 			response = client.execute(getHttp);
 			statusCode = response.getStatusLine().getStatusCode();
